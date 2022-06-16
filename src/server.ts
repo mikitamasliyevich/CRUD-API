@@ -29,4 +29,3 @@ import {
     serverError(req, res);
   }
 });
-// module.exports = server
