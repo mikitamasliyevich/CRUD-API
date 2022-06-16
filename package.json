@@ -6,6 +6,7 @@
   "scripts": {
     "start:dev": "nodemon app.ts",
     "start:prod": "webpack --mode development && node ./dist/bundle.js",
+    "start:multi": "nodemon index.ts",
     "test": "jest",
     "lint": "eslint . --ext .ts"
   },
