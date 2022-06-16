@@ -1,15 +1,27 @@
-const User = require('../models/userModel');
-const { getPostData } = require('../utils/utils');
-const { serverError } = require('../errors/errors');
-const { HTTP_STATUS_CODES, DEFAULT_HEADERS, createInvalidMessage } = require('../utils/constants');
+import {findAll, findById, create, update,remove} from '../models/userModel';
+import { getPostData } from '../utils/utils';
+import { serverError } from '../errors/errors';
+import { HTTP_STATUS_CODES, DEFAULT_HEADERS, createInvalidMessage } from '../utils/constants';
 
+interface IUser {
+  username: string,
+  age: number,
+  hobbies: string[],
+}
+
+type AllUser = {
+  username?: string,
+  age?: number,
+  hobbies?: string[],
+  id?: string
+}
 /**
    * @desc Returns all users
    * @route GET /api/users
    */
-async function getUsers(req, res) {
+ export async function  getUsers(req, res) {
   try {
-    const user = await User.findAll();
+    const user = await findAll();
     res.writeHead(HTTP_STATUS_CODES.OK, DEFAULT_HEADERS);
     res.end(JSON.stringify(user));
   } catch (error) {
@@ -17,14 +29,14 @@ async function getUsers(req, res) {
   }
 }
 
-/**
-   * @desc Returns one user by id
-   * @route GET /api/users/:id
-   */
+// /**
+//    * @desc Returns one user by id
+//    * @route GET /api/users/:id
+//    */
 
-async function getUser(req, res, id) {
+export async function getUser(req, res, id) {
   try {
-    const user = await User.findById(id);
+    const user = await findById(id);
 
     if (!user) {
       res.writeHead(HTTP_STATUS_CODES.NOT_FOUND, DEFAULT_HEADERS);
@@ -38,24 +50,23 @@ async function getUser(req, res, id) {
   }
 }
 
-/**
-   * @desc Creates a user
-   * @route POST /api/users
-   */
+//    * @desc Creates a user
+//    * @route POST /api/users
+//    */
 
-async function createUser(req, res) {
+export async function createUser(req, res) {
   try {
-    const body = await getPostData(req);
-    const { username, age, hobbies } = JSON.parse(body);
+    const body: unknown = await getPostData(req);
+    const { username, age, hobbies } = JSON.parse(body as string);
 
-    const user = {
+    const user: IUser = {
       username,
       age,
       hobbies,
     };
 
     if (!Object.values(user).includes(undefined)) {
-      const newUser = await User.create(user);
+      const newUser = await create(user);
       res.writeHead(HTTP_STATUS_CODES.CREATE, DEFAULT_HEADERS);
       res.end(JSON.stringify(newUser));
     } else {
@@ -72,25 +83,23 @@ async function createUser(req, res) {
    * @route PUT /api/users/:id
    */
 
-async function updateUser(req, res, id) {
+export async function updateUser(req, res, id: string) {
   try {
-    const user = await User.findById(id);
-
+    const user: AllUser = await findById(id);
     if (!user) {
       res.writeHead(HTTP_STATUS_CODES.NOT_FOUND, DEFAULT_HEADERS);
       res.end(JSON.stringify({ message: createInvalidMessage(id) }));
     } else {
-      const body = await getPostData(req);
+      const body: unknown = await getPostData(req);
+      const { username, age, hobbies } = JSON.parse(body as string);
 
-      const { username, age, hobbies } = JSON.parse(body);
-
-      const userData = {
+      const userData: IUser = {
         username: username || user.username,
         age: age || user.age,
-        hobbies: hobbies || user.price,
+        hobbies: hobbies || user.hobbies,
       };
 
-      const updUser = await User.update(id, userData);
+      const updUser = await update(id, userData);
 
       res.writeHead(HTTP_STATUS_CODES.OK, DEFAULT_HEADERS);
       res.end(JSON.stringify(updUser));
@@ -105,15 +114,15 @@ async function updateUser(req, res, id) {
    * @route DELETE /api/users/:id
    */
 
-async function deleteUser(req, res, id) {
+export async function deleteUser(req, res, id) {
   try {
-    const user = await User.findById(id);
+    const user = await findById(id);
 
     if (!user) {
       res.writeHead(HTTP_STATUS_CODES.NOT_FOUND, DEFAULT_HEADERS);
       res.end(JSON.stringify({ message: createInvalidMessage(id) }));
     } else {
-      await User.remove(id);
+      await remove(id);
       res.writeHead(HTTP_STATUS_CODES.DELETE, DEFAULT_HEADERS);
       res.end(JSON.stringify({ message: `User ${id} removed` }));
     }
@@ -121,11 +130,3 @@ async function deleteUser(req, res, id) {
     serverError(req, res);
   }
 }
-
-module.exports = {
-  getUsers,
-  getUser,
-  createUser,
-  updateUser,
-  deleteUser,
-};

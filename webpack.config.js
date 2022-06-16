@@ -5,10 +5,10 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 module.exports = {
   mode: 'production',
   target: 'node',
-  entry: './app.js',
+  entry: './app.ts',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'main.js',
+    filename: 'app.js',
   },
   plugins:
   [

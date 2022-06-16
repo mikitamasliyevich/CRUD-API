@@ -1,22 +1,21 @@
-const { v4: uuidv4 } = require('uuid');
+import { v4 as uuidv4 } from 'uuid';
 let users = require('../../data/users.json');
+import { writeDataToFile } from '../utils/utils';
 
-const { writeDataToFile } = require('../utils/utils');
-
-function findAll() {
+export function findAll() {
   return new Promise((resolve) => {
     resolve(users);
   });
 }
 
-function findById(id) {
+export function findById(id) {
   return new Promise((resolve) => {
     const user = users.find((p) => p.id === id);
     resolve(user);
   });
 }
 
-function create(user) {
+export function create(user) {
   return new Promise((resolve) => {
     const newUser = { id: uuidv4(), ...user };
     users.push(newUser);
@@ -25,7 +24,7 @@ function create(user) {
   });
 }
 
-function update(id, user) {
+export function update(id, user) {
   return new Promise((resolve) => {
     const index = users.findIndex((p) => p.id === id);
     users[index] = { id, ...user };
@@ -34,14 +33,10 @@ function update(id, user) {
   });
 }
 
-function remove(id) {
-  return new Promise((resolve) => {
+export function remove(id) {
+  return new Promise<void>((resolve) => {
     users = users.filter((p) => p.id !== id);
     writeDataToFile('././data/users.json', users);
     resolve();
   });
 }
-
-module.exports = {
-  findAll, findById, create, update, remove,
-};

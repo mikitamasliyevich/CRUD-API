@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 const supertest = require('supertest');
-const server = require('../src/server');
-const { HTTP_STATUS_CODES } = require('../src/utils/constants');
+import {server} from '../src/server';
+import {HTTP_STATUS_CODES} from '../src/utils/constants';
 
 const request = supertest(server);
 
